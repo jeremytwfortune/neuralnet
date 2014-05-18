@@ -15,24 +15,18 @@ load 'BackPropNet.rb'
 
 ###############################################################################
 
-letter = CSV.read('../testing/letter-recognition.data', options = {
+letter = CSV.read('./testing/letter-recognition.data', options = {
   converters: :integer
 })
 
-safe = CSV.read('../testing/safe.dat', options = {
+data = CSV.read('./testing/letter-recognition.data', options = {
   converters: :integer,
-  col_sep: '|'
 })
-safe.shift
-data = CSV.read('../testing/safe.dat', options = {
-  converters: :integer,
-  col_sep: '|'
-})
-data.shift
+# data.shift
 
 # Build a map
 map = []
-safe.each { |row| map.push(row[0]) }
+letter.each { |row| map.push(row[0]) }
 map = map.uniq
 
 # Map output values
@@ -65,7 +59,7 @@ while (epochs < 3000) do
   print "\r#{epochs}: #{mse}"
 end
 
-CSV.open('../mse.csv','wb') do |csv|
+CSV.open('./testing/mse.csv','wb') do |csv|
   bp.mse.each{ |mse| csv << [mse] }
 end
 
@@ -73,9 +67,9 @@ generr = []
 ((data.size * 0.66).ceil..(data.size - 1)).each do |row|
   bp.feed(data[row])
   clust = bp.output
-  generr.push([clust, safe[row][0]].flatten)
+  generr.push([clust, letter[row][0]].flatten)
 end
 
-CSV.open('../generr.csv','wb') do |csv|
+CSV.open('./testing/generr.csv','wb') do |csv|
   generr.each{ |err| csv << err }
 end
